@@ -1,0 +1,6 @@
+{
+  "name": "adtomatic-landing",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" }
+}

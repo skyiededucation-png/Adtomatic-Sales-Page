@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>预约成功 | Adtomatic</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/config.js"></script>
+<script src="/js/pixel.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+<div class="wrap narrow">
+<img src="/assets/logo.png" alt="Adtomatic">
+<p><span>预约成功</span> · 我们 Zoom 见</p>
+</div>
+</header>
+
+<main class="wrap narrow ty">
+<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#E11D1D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+<h1>预约成功！</h1>
+<p class="when" id="when">你的 Zoom 时间已经确认，邀请已发到你的邮箱。</p>
+<a class="btn" id="gcal" href="#" target="_blank" rel="noopener" style="display:none;max-width:420px;font-size:18px;min-height:56px">加进我的 Google Calendar</a>
+<div class="next">
+<b style="font-size:19px">接下来 3 件事：</b>
+<p><b>1.</b> 留意 WhatsApp，我们会发 Zoom 链接给你</p>
+<p><b>2.</b> 准备好你目前的广告数据（如果有）</p>
+<p><b>3.</b> 想好你最想解决的 1 个问题</p>
+</div>
+<div class="ph" style="width:100%;max-width:560px;aspect-ratio:16/9">[Zoom 前必看视频：提高出席率]</div>
+</main>
+
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var s = q.get('start'), e = q.get('end');
+  if (!s) return;
+  var start = new Date(s), end = e ? new Date(e) : new Date(start.getTime() + 45 * 60000);
+  if (isNaN(start)) return;
+  var fmt = new Intl.DateTimeFormat('zh-CN', { weekday: 'short', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kuala_Lumpur' });
+  document.getElementById('when').innerHTML = '你的 Zoom 时间：<b class="red">' + fmt.format(start) + '（马来西亚时间）</b>';
+  function g(d) { return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); }
+  var details = 'Adtomatic 免费 90 天获客计划 Zoom' + (q.get('video') ? '\nZoom: ' + q.get('video') : '');
+  var url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+    + '&text=' + encodeURIComponent('Adtomatic 免费 Zoom 咨询')
+    + '&dates=' + g(start) + '/' + g(end)
+    + '&details=' + encodeURIComponent(details);
+  var a = document.getElementById('gcal');
+  a.href = url; a.style.display = 'inline-flex';
+})();
+</script>
+</body>
+</html>

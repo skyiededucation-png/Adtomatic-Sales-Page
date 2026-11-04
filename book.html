@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>预约免费 Zoom 咨询 | Adtomatic</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/js/config.js"></script>
+<script src="/js/pixel.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+<div class="wrap narrow">
+<img src="/assets/logo.png" alt="Adtomatic">
+<p><span>最后一步：</span>预约你的免费 Zoom 咨询</p>
+</div>
+</header>
+
+<main class="wrap narrow">
+<div class="book-head">
+<div class="price-row"><span class="strike" style="font-size:17px">原价 RM399</span><span class="tag" style="font-size:17px;padding:4px 12px">限时免费</span></div>
+<h1>选好时间，<span class="red">名额就是你的</span></h1>
+<p>大约 1 分钟 · 本月剩余 <b class="red">2</b> 个名额</p>
+</div>
+
+<div class="cal-box"><div id="cal-inline"></div></div>
+
+<div class="note">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E11D1D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 28px"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+<p><b>零风险：</b>就算 Zoom 之后不合作，90 天计划和同行拆解一样是你的。预约后你会收到邮件邀请，可以直接加进你的 Calendar，我们也会 WhatsApp 你确认。</p>
+</div>
+<p style="text-align:center;margin:0 0 48px"><a href="/" style="color:#555555">← 返回看完整内容</a></p>
+</main>
+
+<script>
+fbq('track', 'ViewContent', { content_name: 'Booking page' });
+
+function getCookie(n) {
+  var m = document.cookie.match('(?:^|; )' + n + '=([^;]*)');
+  return m ? decodeURIComponent(m[1]) : '';
+}
+
+// Cal.com inline embed
+(function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+
+Cal("init", "adt", { origin: "https://app.cal.com" });
+
+// Pass Meta click ids into the booking so the server (CAPI) can match the ad click.
+var qs = new URLSearchParams(location.search);
+var fbclid = qs.get('fbclid');
+var fbc = getCookie('_fbc') || (fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '');
+var calConfig = { layout: "month_view", theme: "light" };
+if (getCookie('_fbp')) calConfig["metadata[fbp]"] = getCookie('_fbp');
+if (fbc) calConfig["metadata[fbc]"] = fbc;
+calConfig["metadata[source_url]"] = location.origin + '/book';
+calConfig["metadata[ua]"] = navigator.userAgent.slice(0, 400);
+["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) {
+  if (qs.get(k)) calConfig[k] = qs.get(k);
+});
+
+Cal.ns.adt("inline", {
+  elementOrSelector: "#cal-inline",
+  calLink: (window.ADT && ADT.calLink) || "skyied/skyied-client-appt-booking",
+  config: calConfig
+});
+Cal.ns.adt("ui", { theme: "light", hideEventTypeDetails: false, layout: "month_view", cssVarsPerTheme: { light: { "cal-brand": "#E11D1D" } } });
+
+// Booking done -> browser Schedule event (same event_id as the server CAPI event) -> thank-you page
+var done = false;
+Cal.ns.adt("on", {
+  action: "bookingSuccessfulV2",
+  callback: function (e) {
+    if (done) return; done = true;
+    var data = (e && e.detail && e.detail.data) || {};
+    // Only fire in the browser when we have the booking uid, so Meta can de-duplicate
+    // against the server event. Without a uid the server (CAPI) event still counts.
+    if (data.uid) fbq('track', 'Schedule', { content_name: 'Free Zoom' }, { eventID: 'cal_' + data.uid });
+    var p = new URLSearchParams();
+    if (data.startTime) p.set('start', data.startTime);
+    if (data.endTime) p.set('end', data.endTime);
+    if (data.videoCallUrl) p.set('video', data.videoCallUrl);
+    setTimeout(function () { location.href = '/thank-you?' + p.toString(); }, 600);
+  }
+});
+</script>
+</body>
+</html>
