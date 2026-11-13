@@ -70,6 +70,22 @@ export async function POST(request) {
   return Response.json({ ok: true, id: lead.id, saved });
 }
 
+// Health check: shows only whether settings exist (never their values)
 export function GET() {
-  return Response.json({ ok: true, service: 'booking → CRM + Meta CAPI', crm: storeReady() });
+  const has = (k) => !!process.env[k];
+  return Response.json({
+    ok: true,
+    service: 'booking → CRM + Meta CAPI',
+    crm: storeReady(),
+    check: {
+      BLOB_STORE_ID: has('BLOB_STORE_ID'),
+      BLOB_READ_WRITE_TOKEN: has('BLOB_READ_WRITE_TOKEN'),
+      VERCEL_OIDC_TOKEN: has('VERCEL_OIDC_TOKEN'),
+      CRM_PASSWORD: has('CRM_PASSWORD'),
+      META_PIXEL_ID: has('META_PIXEL_ID'),
+      META_CAPI_TOKEN: has('META_CAPI_TOKEN'),
+      env: process.env.VERCEL_ENV || 'unknown',
+      commit: (process.env.VERCEL_GIT_COMMIT_SHA || '').slice(0, 7)
+    }
+  }, { headers: { 'cache-control': 'no-store' } });
 }
