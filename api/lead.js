@@ -1,30 +1,39 @@
-// Booking form submit (book.html) -> Meta Conversions API "Schedule" event.
-// The browser Pixel sends the same event with the same event_id, so Meta counts it once.
-// Env vars (Vercel → Project → Settings → Environment Variables):
-//   META_PIXEL_ID          required
-//   META_CAPI_TOKEN        required  (Events Manager → Settings → Conversions API → Generate access token)
-//   META_TEST_EVENT_CODE   optional  (only while testing in Events Manager → Test events; remove after)
-//   META_API_VERSION       optional  (default v23.0)
+// Booking form submit (book.html):
+//   1. saves the lead into the CRM (Upstash Redis)
+//   2. sends a Meta Conversions API "Schedule" event (same event_id as the browser Pixel)
+// Env vars: KV_REST_API_URL + KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL + _TOKEN),
+//           META_PIXEL_ID, META_CAPI_TOKEN, optional META_TEST_EVENT_CODE / META_API_VERSION
 import crypto from 'node:crypto';
+import { sha256, str, normPhone, redis, hasRedis, sendCapi } from './_lib.js';
 
-const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
-const str = (v, max = 300) => (typeof v === 'string' ? v.slice(0, max).trim() : '');
-
-export function normPhone(raw) {
-  let d = String(raw || '').replace(/\D/g, '');
-  if (!d) return '';
-  if (d.startsWith('0')) d = '6' + d;           // Malaysia local 01x… -> 601x…
-  return d;
+export function buildLead(body, now = Date.now()) {
+  const id = new Date(now).toISOString().slice(2, 10).replace(/-/g, '') + '-' + crypto.randomBytes(3).toString('hex');
+  return {
+    id,
+    created_at: new Date(now).toISOString(),
+    name: str(body.name, 80),
+    phone: str(body.phone, 30),
+    industry: str(body.industry, 60),
+    industry_other: str(body.industry_other, 80),
+    challenge: str(body.challenge, 1000),
+    date_label: str(body.date_label, 40),
+    time: str(body.time, 20),
+    custom_time: str(body.custom_time, 200),
+    start: str(body.start, 40),
+    utm: str(body.utm, 300),
+    event_id: str(body.event_id, 64),
+    status: 'new',
+    notes: ''
+  };
 }
 
-export function buildEvent(body, headers, now = Date.now()) {
-  const name = str(body.name).toLowerCase();
+export function buildEvent(lead, body, headers, now = Date.now()) {
+  const name = lead.name.toLowerCase();
   const [fn, ...rest] = name.split(/\s+/);
   const ln = rest.join(' ');
-  const phone = normPhone(str(body.phone, 40));
+  const phone = normPhone(lead.phone);
   const ip = String(headers.get('x-forwarded-for') || '').split(',')[0].trim();
   const ua = str(headers.get('user-agent') || '', 400);
-
   const user_data = { country: [sha256('my')] };
   if (phone) { user_data.ph = [sha256(phone)]; user_data.external_id = [sha256(phone)]; }
   if (fn) user_data.fn = [sha256(fn)];
@@ -33,52 +42,42 @@ export function buildEvent(body, headers, now = Date.now()) {
   if (str(body.fbc)) user_data.fbc = str(body.fbc);
   if (ip) user_data.client_ip_address = ip;
   if (ua) user_data.client_user_agent = ua;
-
   return {
     event_name: 'Schedule',
     event_time: Math.floor(now / 1000),
-    event_id: str(body.event_id, 64),
+    event_id: lead.event_id,
     action_source: 'website',
     event_source_url: str(body.source_url, 300) || undefined,
     user_data,
-    custom_data: {
-      content_name: 'Free Zoom',
-      content_category: str(body.industry, 60) || undefined,
-      appointment_start: str(body.start, 40) || undefined
-    }
+    custom_data: { content_name: 'Free Zoom', content_category: lead.industry_other || lead.industry || undefined }
   };
 }
 
 export async function POST(request) {
   let body;
   try { body = JSON.parse(await request.text()); } catch { return new Response('bad json', { status: 400 }); }
+  if (str(body.website)) return Response.json({ ok: true });                    // honeypot: bots fill hidden field
   if (!/^bk_[a-z0-9]{6,30}$/i.test(str(body.event_id, 64))) return new Response('bad event', { status: 400 });
+  if (!str(body.name) || normPhone(body.phone).length < 9) return new Response('missing fields', { status: 400 });
 
-  const pixel = process.env.META_PIXEL_ID, token = process.env.META_CAPI_TOKEN;
-  if (!pixel || !token) {
-    console.error('META_PIXEL_ID / META_CAPI_TOKEN not set');
-    return Response.json({ ok: false, error: 'meta not configured' });
+  const lead = buildLead(body);
+  let saved = false;
+  if (hasRedis()) {
+    try {
+      await redis([
+        ['SET', 'lead:' + lead.id, JSON.stringify(lead)],
+        ['ZADD', 'leads', String(Date.now()), lead.id]
+      ]);
+      saved = true;
+    } catch (err) { console.error('CRM save failed', err); }
+  } else {
+    console.error('CRM not configured (no Redis env vars). Lead:', JSON.stringify(lead));
   }
 
-  const ver = process.env.META_API_VERSION || 'v23.0';
-  const data = { data: [buildEvent(body, request.headers)] };
-  if (process.env.META_TEST_EVENT_CODE) data.test_event_code = process.env.META_TEST_EVENT_CODE;
-
-  try {
-    const res = await fetch(`https://graph.facebook.com/${ver}/${pixel}/events?access_token=${encodeURIComponent(token)}`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    const out = await res.json().catch(() => ({}));
-    if (!res.ok) console.error('Meta CAPI error', res.status, JSON.stringify(out));
-    return Response.json({ ok: res.ok });
-  } catch (err) {
-    console.error('Meta CAPI fetch failed', err);
-    return Response.json({ ok: false });
-  }
+  try { await sendCapi(buildEvent(lead, body, request.headers)); } catch (err) { console.error('CAPI failed', err); }
+  return Response.json({ ok: true, id: lead.id, saved });
 }
 
 export function GET() {
-  return Response.json({ ok: true, service: 'booking → Meta CAPI' });
+  return Response.json({ ok: true, service: 'booking → CRM + Meta CAPI', crm: hasRedis() });
 }

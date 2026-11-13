@@ -3,13 +3,18 @@
 目标：广告 → Landing Page → 预约 Zoom → Meta 看到 **Schedule** 事件 → Ads Manager 的 Cost per Result = **Cost per Appointment**。
 
 ```
-index.html      Landing Page（VSL + 底部晃动按钮 → /book）
-book.html       填资料 + 选日期 / 时间 → 打开 WhatsApp 发预约讯息给 018-262 6442
-thank-you.html  预约已送出 + 补发 WhatsApp 按钮 + 加进 Google Calendar + 准备清单
-api/lead.js     预约送出 → Meta Conversions API（服务器端 Schedule）
-js/config.js    Pixel ID / 预约 WhatsApp 号码 / 可选时段 / 休息日（只改这里）
-assets/vsl.mp4  Landing Page VSL（720p，约 7MB）
+index.html      Landing Page（VSL + 底部晃动按钮 → 预约页）
+book.html       填资料（行业选「其他」可自己写）+ 选日期 / 时间（或自己写方便的时间）
+thank-you.html  预约成功 + WhatsApp 确认按钮 + Thank-you VSL + 加进 Google Calendar + 准备清单
+crm.html        CRM：所有预约名单、状态、备注、WhatsApp 客户、导出 CSV（要密码）
+api/lead.js     预约提交 → 存进 CRM + Meta Conversions API（Schedule）
+api/leads.js    CRM 读取 / 更新（要密码）
+js/config.js    Pixel ID / WhatsApp 号码 / 可选时段 / 开放日（只改这里）
 ```
+
+## 流程
+
+广告 → Landing Page（看 VSL）→ 按底部按钮 → 预约页填资料 + 选时间 → **自动存进 CRM** → Thank-you 页 → 客户按绿色按钮 WhatsApp 确认 / 加 Google Calendar / 看 Thank-you VSL
 
 ## 追踪逻辑
 
@@ -20,19 +25,31 @@ assets/vsl.mp4  Landing Page VSL（720p，约 7MB）
 | 点底部按钮 | InitiateCheckout | — |
 | 点 WhatsApp 拿 Case Study | Contact | — |
 | 打开预约页 | ViewContent | — |
-| **按「确认预约 · 发送到 WhatsApp」** | **Schedule**（event_id = `bk_…`） | **Schedule**（同一个 event_id，带 hash 过的电话 + IP + UA） |
+| **按「确认预约」（同时存进 CRM）** | **Schedule**（event_id = `bk_…`） | **Schedule**（同一个 event_id，带 hash 过的电话 + IP + UA） |
+| Thank-you 页按 WhatsApp 确认 | Contact | — |
 
 两边 event_id 一样 → Meta 只算 1 次。
 
-⚠️ Schedule 是在客户按下按钮时算的。客户打开 WhatsApp 后**没按发送**，Meta 还是会算 1 个预约。所以每周要用 WhatsApp 实际收到的预约数对一下 Ads Manager。
+每个 Schedule 都会在 CRM 里有一笔记录，可以直接拿 CRM 的数量对 Ads Manager。
 
 ## Step 1 · 改设定（js/config.js）
 
 - `pixelId`：你的 Pixel ID
-- `bookingWhatsApp`：预约讯息发去哪个号码（现在是 60182626442）
-- `timeSlots`：可选时段
-- `closedWeekdays`：休息日，例如 `[0]` = 星期日不开放
+- `bookingWhatsApp`：Thank-you 页 WhatsApp 确认发去哪个号码（现在是 60182626442）
+- `timeSlots`：可选时段（现在 10AM – 8PM 开始，每小时一场，9PM 前结束）
+- `closedWeekdays`：不开放的日子（现在 `[0, 6]` = 星期六、日不开放）
 - 没有接 Google Calendar：同一个时段可能有两个人选到，由 setter 打电话时调整
+
+## Step 1.5 · 开 CRM 数据库（一次就好）
+
+1. Vercel → 你的 Project → **Storage** → **Create Database** → 选 **Upstash for Redis**（Marketplace，免费 plan 就够）
+2. 按 **Connect to Project**，Vercel 会自动加环境变量（`KV_REST_API_URL`、`KV_REST_API_TOKEN`）
+3. Settings → Environment Variables 加一个 **`CRM_PASSWORD`**，自己定一串长密码
+4. **Redeploy**
+5. 打开 `https://你的网址/crm`，输入密码就能看到所有预约
+
+CRM 功能：状态（新 Lead / 已联络 / 已确认 / 已出席 / No-show / 成交 / 不合适）、备注、一键 WhatsApp 客户、搜索、导出 CSV。
+CRM 密码只给需要跟进的同事。客户资料是个人资料，不要截图外传。
 
 ## Step 2 · 部署到 Vercel（你做，约 5 分钟）
 

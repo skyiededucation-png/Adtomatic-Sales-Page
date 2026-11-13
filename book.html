@@ -17,18 +17,21 @@
 .card h2{margin:0;font-size:20px;font-weight:900}
 .card h2 span{color:var(--red)}
 .field{display:flex;flex-direction:column;gap:8px;font-size:16px;font-weight:900}
-.field input,.field select,.field textarea{font-family:inherit;font-size:17px;padding:14px;border:2px solid var(--ink);border-radius:8px;width:100%;background:#FFFFFF;color:var(--ink);min-height:52px}
-.field textarea{min-height:110px;resize:vertical;line-height:1.6}
-.field.bad input,.field.bad select{border-color:var(--red);background:var(--red-soft)}
+.field input,.field select,.field textarea{font-family:inherit;font-size:17px;font-weight:500;padding:14px;border:2px solid var(--ink);border-radius:8px;width:100%;background:#FFFFFF;color:var(--ink);min-height:52px}
+.field textarea{min-height:100px;resize:vertical;line-height:1.6}
+.field.bad input,.field.bad select,.field.bad textarea{border-color:var(--red);background:var(--red-soft)}
+.field small{font-weight:500;color:var(--mute);font-size:14px}
 .chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .chips button{min-height:56px;padding:8px;border-radius:10px;font-family:inherit;font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--ink);background:#FFFFFF;color:var(--ink)}
 .chips button small{display:block;font-size:12px;font-weight:700}
 .chips button[aria-pressed="true"]{background:var(--ink);color:#FFFFFF}
+.chips button.other{grid-column:1/-1;border-style:dashed}
 .chosen{margin:0;font-size:16px;font-weight:700;background:var(--grey);border-radius:8px;padding:12px 14px}
 .chosen span{color:var(--red)}
-.err{margin:0;color:var(--red);font-weight:900;text-align:center;display:none}
-.wa-btn{background:#16A34A}
-.wa-btn:hover{background:#15803D}
+.err{margin:16px 0 0;color:var(--red);font-weight:900;text-align:center;display:none}
+[hidden]{display:none !important}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.btn[disabled]{opacity:.7;cursor:wait}
 @media (max-width:620px){.chips{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:16px}}
 </style>
 </head>
@@ -51,24 +54,25 @@
 <form id="book" novalidate>
 <section class="card">
 <h2><span>第 1 步</span>　告诉我们你的生意</h2>
-<label class="field" id="f-name">你的名字<input type="text" id="name" autocomplete="name" placeholder="例如：Jason Tan" required></label>
-<label class="field" id="f-phone">WhatsApp 号码<input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="01X-XXX XXXX" required></label>
-<label class="field" id="f-ind">你的行业<select id="industry" required><option value="">请选择</option><option>装修 / Renovation</option><option>地产 / Property</option><option>贷款 / Loan</option><option>教育 / 培训</option><option>餐饮 / F&amp;B</option><option>其他</option></select></label>
+<label class="field" id="f-name">你的名字<input type="text" id="name" autocomplete="name" placeholder="例如：Jason Tan"></label>
+<label class="field" id="f-phone">WhatsApp 号码<input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="01X-XXX XXXX"></label>
+<label class="field" id="f-ind">你的行业<select id="industry"><option value="">请选择</option><option>装修 / Renovation</option><option>地产 / Property</option><option>贷款 / Loan</option><option>教育 / 培训</option><option>餐饮 / F&amp;B</option><option value="其他">其他</option></select></label>
+<label class="field" id="f-ind2" hidden>你的行业是？<input type="text" id="industry_other" placeholder="例如：美容院、汽车维修、保险"></label>
 <label class="field">目前广告的 Cost Per Lead，或生意上遇到的挑战和问题<textarea id="challenge" placeholder="例如：每个 lead RM25，但 10 个只有 1 个肯约见面 / 还没开始跑广告，不知道从哪里开始"></textarea></label>
+<label class="hp" aria-hidden="true">Website<input type="text" id="website" tabindex="-1" autocomplete="off"></label>
 </section>
 
 <section class="card">
-<h2><span>第 2 步</span>　选你方便的时间（马来西亚时间）</h2>
-<div class="field">日期<div class="chips" id="days"></div></div>
-<div class="field">时间（Zoom 45 分钟）<div class="chips" id="slots"></div></div>
+<h2><span>第 2 步</span>　选你方便的时间</h2>
+<p style="margin:-6px 0 0;color:var(--mute);font-size:15px">星期一至五 · 10AM – 9PM（马来西亚时间）· Zoom 45 分钟</p>
+<div class="field" id="f-date">日期<div class="chips" id="days"></div></div>
+<div class="field" id="f-time">时间<div class="chips" id="slots"></div></div>
+<label class="field" id="f-custom" hidden>写下你方便的日期和时间<textarea id="custom_time" placeholder="例如：星期六早上 / 下个星期三晚上 9:30 之后"></textarea><small>我们会按你写的时间安排，同事会联络你确认</small></label>
 <p class="chosen">你选的时间：<span id="chosen">还没选</span></p>
 </section>
 
 <p class="err" id="err" role="alert"></p>
-<button type="submit" class="btn wa-btn" style="max-width:none;margin-top:20px">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.7-.1 1.2z"/></svg>
-确认预约 · 发送到 WhatsApp</button>
-<p style="margin:10px 0 0;text-align:center;font-size:14px;color:var(--mute)">按下后会打开 WhatsApp，<b>记得按「发送」</b>，名额才算锁定</p>
+<button type="submit" class="btn" id="submit" style="max-width:none;margin-top:20px">确认预约我的免费 Zoom →</button>
 </form>
 
 <div class="note" style="margin-top:20px">
@@ -83,109 +87,129 @@ fbq('track', 'ViewContent', { content_name: 'Booking page' });
 (function () {
   var C = window.ADT || {};
   var WK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  var state = { date: null, dateLabel: '', time: null };
+  var OTHER = '__other__';
+  var st = { date: '', dateLabel: '', time: '' };
   var $ = function (id) { return document.getElementById(id); };
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
 
-  // Malaysia "today" regardless of the visitor's device timezone
+  // Industry "其他" -> ask them to type it
+  $('industry').addEventListener('change', function () {
+    $('f-ind2').hidden = $('industry').value !== '其他';
+    if (!$('f-ind2').hidden) $('industry_other').focus();
+  });
+
+  // Dates: next N open days, Malaysia time
   var my = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
   var closed = C.closedWeekdays || [];
-  var days = [], i = 1;
-  while (days.length < (C.daysAhead || 8) && i < 30) {
+  var days = [];
+  for (var i = 1; days.length < (C.daysAhead || 10) && i < 40; i++) {
     var d = new Date(my.getFullYear(), my.getMonth(), my.getDate() + i);
-    if (closed.indexOf(d.getDay()) === -1) days.push(d);
-    i++;
+    if (closed.indexOf(d.getDay()) === -1) days.push({ d: d, tomorrow: i === 1 });
   }
-  function pad(n) { return (n < 10 ? '0' : '') + n; }
-  days.forEach(function (d, idx) {
-    var b = document.createElement('button');
+  days.forEach(function (o) {
+    var d = o.d, b = document.createElement('button'), label = (d.getMonth() + 1) + '/' + d.getDate();
     b.type = 'button'; b.setAttribute('aria-pressed', 'false');
-    var label = (d.getMonth() + 1) + '/' + d.getDate();
-    b.innerHTML = '<small>' + (idx === 0 && d.getDate() === new Date(my.getTime() + 864e5).getDate() ? '明天' : WK[d.getDay()]) + '</small>' + label;
+    b.innerHTML = '<small>' + (o.tomorrow ? '明天' : WK[d.getDay()]) + '</small>' + label;
     b.addEventListener('click', function () {
-      $('days').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
-      b.setAttribute('aria-pressed', 'true');
-      state.date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-      state.dateLabel = WK[d.getDay()] + ' ' + label;
+      press('days', b);
+      st.date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+      st.dateLabel = WK[d.getDay()] + ' ' + label;
+      if (st.time === OTHER) { st.time = ''; press('slots', null); $('f-custom').hidden = true; }
       render();
     });
     $('days').appendChild(b);
   });
+
+  // Time slots + "other time"
   (C.timeSlots || []).forEach(function (t) {
     var b = document.createElement('button');
     b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.textContent = t;
-    b.addEventListener('click', function () {
-      $('slots').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
-      b.setAttribute('aria-pressed', 'true'); state.time = t; render();
-    });
+    b.addEventListener('click', function () { press('slots', b); st.time = t; $('f-custom').hidden = true; render(); });
     $('slots').appendChild(b);
   });
+  var ob = document.createElement('button');
+  ob.type = 'button'; ob.className = 'other'; ob.setAttribute('aria-pressed', 'false');
+  ob.textContent = '以上时间都不方便？自己写你方便的时间';
+  ob.addEventListener('click', function () {
+    press('slots', ob); press('days', null);
+    st.time = OTHER; st.date = ''; st.dateLabel = '';
+    $('f-custom').hidden = false; $('custom_time').focus(); render();
+  });
+  $('slots').appendChild(ob);
+
+  function press(group, btn) {
+    $(group).querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === btn ? 'true' : 'false'); });
+  }
   function render() {
-    $('chosen').textContent = state.date || state.time
-      ? (state.dateLabel || '请选日期') + ' · ' + (state.time || '请选时间') : '还没选';
+    $('chosen').textContent = st.time === OTHER ? '自己写的时间（见上面）'
+      : (st.date || st.time ? (st.dateLabel || '请选日期') + ' · ' + (st.time || '请选时间') : '还没选');
     $('err').style.display = 'none';
   }
   function to24(t) {
     var m = t.match(/(\d+):(\d+)\s*(AM|PM)/i); if (!m) return '10:00';
-    var h = +m[1] % 12 + (/pm/i.test(m[3]) ? 12 : 0); return pad(h) + ':' + m[2];
+    return pad(+m[1] % 12 + (/pm/i.test(m[3]) ? 12 : 0)) + ':' + m[2];
   }
   function getCookie(n) { var m = document.cookie.match('(?:^|; )' + n + '=([^;]*)'); return m ? decodeURIComponent(m[1]) : ''; }
 
-  ['name', 'phone', 'industry'].forEach(function (id) {
-    $(id).addEventListener('input', function () { $(id).parentNode.classList.remove('bad'); });
-    $(id).addEventListener('change', function () { $(id).parentNode.classList.remove('bad'); });
+  ['name', 'phone', 'industry', 'industry_other', 'custom_time'].forEach(function (id) {
+    ['input', 'change'].forEach(function (ev) { $(id).addEventListener(ev, function () { $(id).parentNode.classList.remove('bad'); }); });
   });
+
   $('book').addEventListener('submit', function (e) {
     e.preventDefault();
-    var name = $('name').value.trim(), phone = $('phone').value.trim(), ind = $('industry').value;
-    var ch = $('challenge').value.trim();
-    ['f-name', 'f-phone', 'f-ind'].forEach(function (id) { $(id).classList.remove('bad'); });
+    var v = {
+      name: $('name').value.trim(), phone: $('phone').value.trim(),
+      industry: $('industry').value, industry_other: $('industry_other').value.trim(),
+      challenge: $('challenge').value.trim(), custom_time: $('custom_time').value.trim()
+    };
+    document.querySelectorAll('.field.bad').forEach(function (x) { x.classList.remove('bad'); });
     var miss = [];
-    if (!name) { miss.push('名字'); $('f-name').classList.add('bad'); }
-    if (phone.replace(/\D/g, '').length < 9) { miss.push('WhatsApp 号码'); $('f-phone').classList.add('bad'); }
-    if (!ind) { miss.push('行业'); $('f-ind').classList.add('bad'); }
-    if (!state.date) miss.push('日期');
-    if (!state.time) miss.push('时间');
+    if (!v.name) { miss.push('名字'); $('f-name').classList.add('bad'); }
+    if (v.phone.replace(/\D/g, '').length < 9) { miss.push('WhatsApp 号码'); $('f-phone').classList.add('bad'); }
+    if (!v.industry) { miss.push('行业'); $('f-ind').classList.add('bad'); }
+    if (v.industry === '其他' && !v.industry_other) { miss.push('你的行业'); $('f-ind2').classList.add('bad'); }
+    if (st.time === OTHER) {
+      if (!v.custom_time) { miss.push('你方便的时间'); $('f-custom').classList.add('bad'); }
+    } else {
+      if (!st.date) miss.push('日期');
+      if (!st.time) miss.push('时间');
+    }
     if (miss.length) { $('err').textContent = '请填写 / 选择：' + miss.join('、'); $('err').style.display = 'block'; return; }
 
-    var startISO = state.date + 'T' + to24(state.time) + ':00+08:00';
-    var msg = 'Hi Adtomatic，我要预约免费 45 分钟 Zoom 咨询 🙋\n\n'
-      + '👤 名字：' + name + '\n'
-      + '📱 WhatsApp：' + phone + '\n'
-      + '🏢 行业：' + ind + '\n'
-      + '📅 时间：' + state.dateLabel + ' ' + state.time + '（马来西亚时间）\n'
-      + '📝 CPL / 挑战：' + (ch || '-');
-    var wa = 'https://wa.me/' + (C.bookingWhatsApp || '60182626442') + '?text=' + encodeURIComponent(msg);
+    var custom = st.time === OTHER;
+    var start = custom ? '' : st.date + 'T' + to24(st.time) + ':00+08:00';
+    var whenText = custom ? v.custom_time : st.dateLabel + ' ' + st.time + '（马来西亚时间）';
+    var industry = v.industry === '其他' ? '其他：' + v.industry_other : v.industry;
 
-    // Tracking: browser Schedule + server (CAPI) Schedule with the same event id
+    // Tracking: browser Schedule + server CAPI Schedule with the same event id
     var eid = 'bk_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     fbq('track', 'Schedule', { content_name: 'Free Zoom' }, { eventID: eid });
     var qs = new URLSearchParams(location.search), fbclid = qs.get('fbclid');
-    var payload = JSON.stringify({
-      event_id: eid, name: name, phone: phone, industry: ind, start: startISO,
+    var utm = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].map(function (k) { return qs.get(k) ? k.slice(4) + '=' + qs.get(k) : ''; }).filter(Boolean).join('&');
+
+    // Hand the booking to the thank-you page (WhatsApp confirm message + calendar)
+    var info = { name: v.name, phone: v.phone, industry: industry, challenge: v.challenge, when: whenText, start: start, custom: custom };
+    try { sessionStorage.setItem('adt_booking', JSON.stringify(info)); } catch (err) {}
+
+    $('submit').disabled = true; $('submit').textContent = '提交中…';
+    var done = false;
+    function go(id) {
+      if (done) return; done = true;
+      location.href = 'thank-you.html?' + (start ? 'start=' + encodeURIComponent(start) + '&' : '') + (id ? 'ref=' + encodeURIComponent(id) : '');
+    }
+    var payload = {
+      event_id: eid, name: v.name, phone: v.phone, industry: v.industry, industry_other: v.industry_other,
+      challenge: v.challenge, date_label: custom ? '' : st.dateLabel, time: custom ? '' : st.time,
+      custom_time: custom ? v.custom_time : '', start: start, utm: utm, website: $('website').value,
       fbp: getCookie('_fbp'), fbc: getCookie('_fbc') || (fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : ''),
       source_url: location.origin + '/book'
-    });
-    try {
-      if (navigator.sendBeacon) navigator.sendBeacon('/api/lead', new Blob([payload], { type: 'application/json' }));
-      else fetch('/api/lead', { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload, keepalive: true });
-    } catch (err) {}
-
-    // Open WhatsApp (new tab/app) and move this tab to the thank-you page
-    var ty = 'thank-you.html?start=' + encodeURIComponent(startISO) + '&wa=' + encodeURIComponent(wa);
-    try { sessionStorage.setItem('adt_ty', ty); } catch (err) {}
-    var w = null;
-    try { w = window.open(wa, '_blank'); } catch (err) {}
-    // If a new tab/app opened, show the thank-you page here.
-    // If it was blocked (common in Facebook / Instagram in-app browsers), open WhatsApp in this tab;
-    // when the visitor comes back, the pageshow handler below sends them to the thank-you page.
-    if (w) location.href = ty; else location.href = wa;
-  });
-
-  // Back from WhatsApp -> thank-you page
-  window.addEventListener('pageshow', function () {
-    var ty = null;
-    try { ty = sessionStorage.getItem('adt_ty'); } catch (err) {}
-    if (ty) { try { sessionStorage.removeItem('adt_ty'); } catch (err) {} location.replace(ty); }
+    };
+    // Save to CRM, then go to thank-you. Never block the visitor for more than 5s.
+    setTimeout(function () { go(''); }, 5000);
+    fetch('/api/lead', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), keepalive: true })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { go(j && j.id); })
+      .catch(function () { go(''); });
   });
 })();
 </script>

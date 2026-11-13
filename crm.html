@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Adtomatic CRM · 预约名单</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+<style>
+body{background:#F5F5F5}
+[hidden]{display:none !important}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:20px 0 12px}
+.bar h1{margin:0;font-size:24px;font-weight:900}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tbtn{min-height:44px;padding:8px 14px;border-radius:8px;border:2px solid var(--ink);background:#FFFFFF;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;color:var(--ink)}
+.tbtn.dark{background:var(--ink);color:#FFFFFF}
+.stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stat-c{background:#FFFFFF;border-radius:10px;padding:10px 12px}
+.stat-c div:first-child{font-size:13px;color:var(--mute);font-weight:700}
+.stat-c div:last-child{font-family:Poppins,sans-serif;font-size:24px;font-weight:800}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filters button{min-height:40px;padding:6px 12px;border-radius:999px;border:2px solid var(--ink);background:#FFFFFF;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#FFFFFF}
+.filters input{flex:1 1 200px;min-height:42px;padding:8px 12px;border:2px solid var(--ink);border-radius:8px;font-family:inherit;font-size:15px}
+.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-bottom:48px}
+.lead{background:#FFFFFF;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;border-left:6px solid #CCCCCC}
+.lead[data-s="new"]{border-left-color:var(--red)}
+.lead[data-s="contacted"]{border-left-color:#F59E0B}
+.lead[data-s="confirmed"]{border-left-color:#2563EB}
+.lead[data-s="showed"]{border-left-color:#7C3AED}
+.lead[data-s="won"]{border-left-color:#16A34A}
+.lead[data-s="no_show"],.lead[data-s="lost"]{border-left-color:#9CA3AF}
+.lead .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.lead .nm{font-size:19px;font-weight:900}
+.lead .meta{font-size:13px;color:var(--mute)}
+.lead .row2{font-size:15px;line-height:1.6}
+.lead .row2 b{color:var(--mute);font-weight:700;margin-right:4px}
+.lead .when{font-weight:900;color:var(--red)}
+.lead select,.lead textarea{font-family:inherit;font-size:15px;border:2px solid #DDDDDD;border-radius:8px;padding:8px 10px;width:100%}
+.lead select{min-height:42px;font-weight:700}
+.lead textarea{min-height:60px;resize:vertical}
+.lead .acts{display:flex;gap:8px;flex-wrap:wrap}
+.wa-l{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border-radius:8px;background:#16A34A;color:#FFFFFF !important;font-weight:700;text-decoration:none;font-size:14px}
+.saved{font-size:12px;color:#16A34A;font-weight:700;opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+.login{max-width:380px;margin:12vh auto;background:#FFFFFF;border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.login input{min-height:52px;padding:12px;border:2px solid var(--ink);border-radius:8px;font-family:inherit;font-size:17px}
+.msg{color:var(--red);font-weight:700;margin:0}
+.empty{background:#FFFFFF;border-radius:12px;padding:32px;text-align:center;color:var(--mute);grid-column:1/-1}
+@media (max-width:760px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.list{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+<div class="wrap">
+<img src="assets/logo.png" alt="Adtomatic">
+<p><span>CRM</span> · 免费 Zoom 预约名单</p>
+</div>
+</header>
+
+<main class="wrap">
+<form class="login" id="login">
+<b style="font-size:20px">输入 CRM 密码</b>
+<input type="password" id="pw" autocomplete="current-password" placeholder="CRM_PASSWORD">
+<button class="btn" type="submit" style="max-width:none;min-height:52px;font-size:18px">进入</button>
+<p class="msg" id="login-msg"></p>
+</form>
+
+<div id="app" hidden>
+<div class="bar">
+<h1>预约名单</h1>
+<div class="tools">
+<button class="tbtn" id="refresh" type="button">刷新</button>
+<button class="tbtn" id="csv" type="button">导出 CSV</button>
+<button class="tbtn dark" id="logout" type="button">登出</button>
+</div>
+</div>
+<div class="stats" id="stats"></div>
+<div class="filters" id="filters"><input type="search" id="q" placeholder="搜索名字 / 电话 / 行业"></div>
+<p class="msg" id="app-msg"></p>
+<div class="list" id="list"></div>
+</div>
+</main>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var S = [['new', '新 Lead'], ['contacted', '已联络'], ['confirmed', '已确认'], ['showed', '已出席'], ['no_show', 'No-show'], ['won', '成交'], ['lost', '不合适']];
+  var LABEL = {}; S.forEach(function (x) { LABEL[x[0]] = x[1]; });
+  var key = '', leads = [], filter = 'all';
+  try { key = sessionStorage.getItem('adt_crm') || ''; } catch (e) {}
+
+  function api(method, body) {
+    return fetch('/api/leads', { method: method, headers: { 'x-crm-key': key, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' })
+      .then(function (r) { if (r.status === 401) throw new Error('auth'); return r.json(); });
+  }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function waNum(p) { var d = String(p || '').replace(/\D/g, ''); if (d.charAt(0) === '0') d = '6' + d; return d; }
+  function fmt(iso) { try { return new Date(iso).toLocaleString('zh-CN', { timeZone: 'Asia/Kuala_Lumpur', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return iso; } }
+  function when(l) { return l.custom_time ? '自己写：' + l.custom_time : (l.date_label ? l.date_label + ' ' + l.time : '-'); }
+  function industry(l) { return l.industry === '其他' && l.industry_other ? '其他：' + l.industry_other : (l.industry || '-'); }
+
+  function load() {
+    $('app-msg').textContent = '载入中…';
+    return api('GET').then(function (j) {
+      if (!j.ok) throw new Error(j.error || 'error');
+      leads = j.leads || []; $('app-msg').textContent = '';
+      $('login').hidden = true; $('app').hidden = false; render();
+    }).catch(function (e) {
+      if (e.message === 'auth') { key = ''; try { sessionStorage.removeItem('adt_crm'); } catch (x) {} $('login').hidden = false; $('app').hidden = true; $('login-msg').textContent = '密码不对'; }
+      else $('app-msg').textContent = '载入失败：' + e.message;
+    });
+  }
+
+  function render() {
+    // stats
+    var st = $('stats'); st.innerHTML = '';
+    var count = function (s) { return leads.filter(function (l) { return l.status === s; }).length; };
+    [['全部', leads.length], ['新 Lead', count('new')], ['已确认', count('confirmed')], ['已出席', count('showed')], ['No-show', count('no_show')], ['成交', count('won')]].forEach(function (x) {
+      var c = el('div', 'stat-c'); c.appendChild(el('div', '', x[0])); c.appendChild(el('div', '', x[1])); st.appendChild(c);
+    });
+    // filters
+    var f = $('filters');
+    f.querySelectorAll('button').forEach(function (b) { b.remove(); });
+    [['all', '全部']].concat(S).forEach(function (x) {
+      var b = el('button', '', x[1]); b.type = 'button'; b.setAttribute('aria-pressed', filter === x[0] ? 'true' : 'false');
+      b.addEventListener('click', function () { filter = x[0]; render(); });
+      f.insertBefore(b, $('q'));
+    });
+    // list
+    var q = $('q').value.trim().toLowerCase();
+    var rows = leads.filter(function (l) {
+      if (filter !== 'all' && l.status !== filter) return false;
+      if (!q) return true;
+      return [l.name, l.phone, l.industry, l.industry_other, l.challenge].join(' ').toLowerCase().indexOf(q) !== -1;
+    });
+    var list = $('list'); list.innerHTML = '';
+    if (!rows.length) { list.appendChild(el('div', 'empty', leads.length ? '没有符合的 lead' : '还没有预约。客户在预约页提交后会出现在这里。')); return; }
+    rows.forEach(function (l) {
+      var c = el('div', 'lead'); c.dataset.s = l.status;
+      var top = el('div', 'top'); var left = el('div');
+      left.appendChild(el('div', 'nm', l.name || '-'));
+      left.appendChild(el('div', 'meta', '提交：' + fmt(l.created_at) + ' · #' + l.id));
+      top.appendChild(left);
+      var sel = el('select'); sel.style.width = 'auto';
+      S.forEach(function (x) { var o = el('option', '', x[1]); o.value = x[0]; if (l.status === x[0]) o.selected = true; sel.appendChild(o); });
+      top.appendChild(sel); c.appendChild(top);
+      var r1 = el('div', 'row2'); r1.appendChild(el('b', '', '时间')); r1.appendChild(el('span', 'when', when(l))); c.appendChild(r1);
+      var r2 = el('div', 'row2'); r2.appendChild(el('b', '', '电话')); r2.appendChild(el('span', '', l.phone || '-')); c.appendChild(r2);
+      var r3 = el('div', 'row2'); r3.appendChild(el('b', '', '行业')); r3.appendChild(el('span', '', industry(l))); c.appendChild(r3);
+      if (l.challenge) { var r4 = el('div', 'row2'); r4.appendChild(el('b', '', 'CPL / 挑战')); r4.appendChild(el('span', '', l.challenge)); c.appendChild(r4); }
+      if (l.utm) { var r5 = el('div', 'meta', '来源：' + l.utm); c.appendChild(r5); }
+      var notes = el('textarea'); notes.placeholder = '备注（例如：已打电话，周三再跟）'; notes.value = l.notes || ''; c.appendChild(notes);
+      var acts = el('div', 'acts');
+      var wa = el('a', 'wa-l', 'WhatsApp 他');
+      wa.href = 'https://wa.me/' + waNum(l.phone) + '?text=' + encodeURIComponent('Hi ' + (l.name || '') + '，我是 Adtomatic 的同事，收到你预约的免费 45 分钟 Zoom 咨询（' + when(l) + '）。想跟你确认时间 🙏');
+      wa.target = '_blank'; wa.rel = 'noopener'; acts.appendChild(wa);
+      var ok = el('span', 'saved', '已保存 ✓'); acts.appendChild(ok); c.appendChild(acts);
+      function save(patch) {
+        api('PATCH', Object.assign({ id: l.id }, patch)).then(function (j) {
+          if (j.ok) { Object.assign(l, j.lead); c.dataset.s = l.status; ok.classList.add('on'); setTimeout(function () { ok.classList.remove('on'); }, 1500); }
+        }).catch(function () { alert('保存失败，请刷新再试'); });
+      }
+      sel.addEventListener('change', function () { save({ status: sel.value }); });
+      notes.addEventListener('blur', function () { if (notes.value !== (l.notes || '')) save({ notes: notes.value }); });
+      list.appendChild(c);
+    });
+  }
+
+  function csv() {
+    var head = ['编号', '提交时间', '名字', '电话', '行业', '时间', 'CPL / 挑战', '状态', '备注', '来源'];
+    var esc = function (v) { v = String(v == null ? '' : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
+    var lines = [head.map(esc).join(',')].concat(leads.map(function (l) {
+      return [l.id, fmt(l.created_at), l.name, l.phone, industry(l), when(l), l.challenge, LABEL[l.status] || l.status, l.notes, l.utm].map(esc).join(',');
+    }));
+    var blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'adtomatic-leads-' + new Date().toISOString().slice(0, 10) + '.csv'; a.click();
+  }
+
+  $('login').addEventListener('submit', function (e) {
+    e.preventDefault(); key = $('pw').value; $('login-msg').textContent = '';
+    try { sessionStorage.setItem('adt_crm', key); } catch (x) {}
+    load();
+  });
+  $('refresh').addEventListener('click', load);
+  $('csv').addEventListener('click', csv);
+  $('logout').addEventListener('click', function () { key = ''; try { sessionStorage.removeItem('adt_crm'); } catch (x) {} location.reload(); });
+  $('q').addEventListener('input', render);
+  if (key) load();
+})();
+</script>
+</body>
+</html>
