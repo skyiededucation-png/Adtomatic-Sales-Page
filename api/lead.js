@@ -1,10 +1,11 @@
 // Booking form submit (book.html):
-//   1. saves the lead into the CRM (Upstash Redis)
+//   1. saves the lead into our own CRM (crm.html)
 //   2. sends a Meta Conversions API "Schedule" event (same event_id as the browser Pixel)
-// Env vars: KV_REST_API_URL + KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL + _TOKEN),
-//           META_PIXEL_ID, META_CAPI_TOKEN, optional META_TEST_EVENT_CODE / META_API_VERSION
+//   Storage: Vercel Blob private store connected to the project (see api/_store.js)
+// Env vars: META_PIXEL_ID, META_CAPI_TOKEN, optional META_TEST_EVENT_CODE / META_API_VERSION
 import crypto from 'node:crypto';
-import { sha256, str, normPhone, redis, hasRedis, sendCapi } from './_lib.js';
+import { sha256, str, normPhone, sendCapi } from './_lib.js';
+import { saveLead, storeReady } from './_store.js';
 
 export function buildLead(body, now = Date.now()) {
   const id = new Date(now).toISOString().slice(2, 10).replace(/-/g, '') + '-' + crypto.randomBytes(3).toString('hex');
@@ -62,22 +63,13 @@ export async function POST(request) {
 
   const lead = buildLead(body);
   let saved = false;
-  if (hasRedis()) {
-    try {
-      await redis([
-        ['SET', 'lead:' + lead.id, JSON.stringify(lead)],
-        ['ZADD', 'leads', String(Date.now()), lead.id]
-      ]);
-      saved = true;
-    } catch (err) { console.error('CRM save failed', err); }
-  } else {
-    console.error('CRM not configured (no Redis env vars). Lead:', JSON.stringify(lead));
-  }
+  try { await saveLead(lead); saved = true; }
+  catch (err) { console.error('CRM save failed', err, 'LEAD:', JSON.stringify(lead)); }   // lead still in Vercel logs
 
   try { await sendCapi(buildEvent(lead, body, request.headers)); } catch (err) { console.error('CAPI failed', err); }
   return Response.json({ ok: true, id: lead.id, saved });
 }
 
 export function GET() {
-  return Response.json({ ok: true, service: 'booking → CRM + Meta CAPI', crm: hasRedis() });
+  return Response.json({ ok: true, service: 'booking → CRM + Meta CAPI', crm: storeReady() });
 }

@@ -11,27 +11,6 @@ export function normPhone(raw) {
   return d;
 }
 
-// ---- Redis (Upstash via Vercel Marketplace). Works with either env var pair. ----
-function redisConf() {
-  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-  return url && token ? { url: url.replace(/\/$/, ''), token } : null;
-}
-export const hasRedis = () => !!redisConf();
-
-export async function redis(commands) {
-  const c = redisConf();
-  if (!c) throw new Error('Redis not configured');
-  const res = await fetch(c.url + '/pipeline', {
-    method: 'POST',
-    headers: { authorization: 'Bearer ' + c.token, 'content-type': 'application/json' },
-    body: JSON.stringify(commands)
-  });
-  if (!res.ok) throw new Error('Redis HTTP ' + res.status);
-  const out = await res.json();
-  return out.map((r) => { if (r.error) throw new Error(r.error); return r.result; });
-}
-
 // ---- CRM password check (env CRM_PASSWORD) ----
 export function authed(request) {
   const pw = process.env.CRM_PASSWORD;

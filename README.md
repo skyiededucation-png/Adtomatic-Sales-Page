@@ -8,6 +8,7 @@ book.html       填资料（行业选「其他」可自己写）+ 选日期 / �
 thank-you.html  预约成功 + WhatsApp 确认按钮 + Thank-you VSL + 加进 Google Calendar + 准备清单
 crm.html        CRM：所有预约名单、状态、备注、WhatsApp 客户、导出 CSV（要密码）
 api/lead.js     预约提交 → 存进 CRM + Meta Conversions API（Schedule）
+api/_store.js   CRM 储存层（现在用 Vercel Blob，将来换自己的数据库只改这里）
 api/leads.js    CRM 读取 / 更新（要密码）
 js/config.js    Pixel ID / WhatsApp 号码 / 可选时段 / 开放日（只改这里）
 ```
@@ -40,15 +41,19 @@ js/config.js    Pixel ID / WhatsApp 号码 / 可选时段 / 开放日（只改�
 - `closedWeekdays`：不开放的日子（现在 `[0, 6]` = 星期六、日不开放）
 - 没有接 Google Calendar：同一个时段可能有两个人选到，由 setter 打电话时调整
 
-## Step 1.5 · 开 CRM 数据库（一次就好）
+## Step 1.5 · 开 CRM 储存（一次就好，全部在 Vercel 里面）
 
-1. Vercel → 你的 Project → **Storage** → **Create Database** → 选 **Upstash for Redis**（Marketplace，免费 plan 就够）
-2. 按 **Connect to Project**，Vercel 会自动加环境变量（`KV_REST_API_URL`、`KV_REST_API_TOKEN`）
-3. Settings → Environment Variables 加一个 **`CRM_PASSWORD`**，自己定一串长密码
-4. **Redeploy**
-5. 打开 `https://你的网址/crm`，输入密码就能看到所有预约
+CRM 是我们自己的页面（`/crm`），资料存在 **Vercel 自己的 Blob 储存**，在同一个 Vercel Project 里面，不用开其他平台的账号。
 
+1. Vercel → 你的 Project → **Storage** → **Create** → 选 **Blob** → Access 选 **Private** → Connect to Project
+2. Settings → Environment Variables 加 **`CRM_PASSWORD`**，自己定一串长密码
+3. **Redeploy**
+4. 检查：打开 `https://你的网址/api/lead`，看到 `"crm":true` 就是连好了
+5. 打开 `https://你的网址/crm`，输入密码
+
+每个 lead 是一个私密 JSON 文件（`crm/leads/<编号>.json`），只有带密码的 CRM 页面读得到。
 CRM 功能：状态（新 Lead / 已联络 / 已确认 / 已出席 / No-show / 成交 / 不合适）、备注、一键 WhatsApp 客户、搜索、导出 CSV。
+将来换成我们自己的 CRM / 数据库，只要改 `api/_store.js` 这一个文件。
 CRM 密码只给需要跟进的同事。客户资料是个人资料，不要截图外传。
 
 ## Step 2 · 部署到 Vercel（你做，约 5 分钟）
