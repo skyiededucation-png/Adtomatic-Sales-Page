@@ -12,6 +12,25 @@
 <link rel="stylesheet" href="/css/site.css">
 <script src="/js/config.js"></script>
 <script src="/js/pixel.js"></script>
+<style>
+.card{border:3px solid var(--ink);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.card h2{margin:0;font-size:20px;font-weight:900}
+.card h2 span{color:var(--red)}
+.field{display:flex;flex-direction:column;gap:8px;font-size:16px;font-weight:900}
+.field input,.field select,.field textarea{font-family:inherit;font-size:17px;padding:14px;border:2px solid var(--ink);border-radius:8px;width:100%;background:#FFFFFF;color:var(--ink);min-height:52px}
+.field textarea{min-height:110px;resize:vertical;line-height:1.6}
+.field.bad input,.field.bad select{border-color:var(--red);background:var(--red-soft)}
+.chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.chips button{min-height:56px;padding:8px;border-radius:10px;font-family:inherit;font-size:16px;font-weight:900;cursor:pointer;border:2px solid var(--ink);background:#FFFFFF;color:var(--ink)}
+.chips button small{display:block;font-size:12px;font-weight:700}
+.chips button[aria-pressed="true"]{background:var(--ink);color:#FFFFFF}
+.chosen{margin:0;font-size:16px;font-weight:700;background:var(--grey);border-radius:8px;padding:12px 14px}
+.chosen span{color:var(--red)}
+.err{margin:0;color:var(--red);font-weight:900;text-align:center;display:none}
+.wa-btn{background:#16A34A}
+.wa-btn:hover{background:#15803D}
+@media (max-width:620px){.chips{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:16px}}
+</style>
 </head>
 <body>
 
@@ -22,72 +41,153 @@
 </div>
 </header>
 
-<main class="wrap narrow">
+<main class="wrap narrow" style="padding-bottom:48px">
 <div class="book-head">
 <div class="price-row"><span class="strike" style="font-size:17px">原价 RM399</span><span class="tag" style="font-size:17px;padding:4px 12px">限时免费</span></div>
 <h1>选好时间，<span class="red">名额就是你的</span></h1>
 <p>大约 1 分钟 · 本月剩余 <b class="red">2</b> 个名额</p>
 </div>
 
-<div class="cal-box"><div id="cal-inline"></div></div>
+<form id="book" novalidate>
+<section class="card">
+<h2><span>第 1 步</span>　告诉我们你的生意</h2>
+<label class="field" id="f-name">你的名字<input type="text" id="name" autocomplete="name" placeholder="例如：Jason Tan" required></label>
+<label class="field" id="f-phone">WhatsApp 号码<input type="tel" id="phone" autocomplete="tel" inputmode="tel" placeholder="01X-XXX XXXX" required></label>
+<label class="field" id="f-ind">你的行业<select id="industry" required><option value="">请选择</option><option>装修 / Renovation</option><option>地产 / Property</option><option>贷款 / Loan</option><option>教育 / 培训</option><option>餐饮 / F&amp;B</option><option>其他</option></select></label>
+<label class="field">目前广告的 Cost Per Lead，或生意上遇到的挑战和问题<textarea id="challenge" placeholder="例如：每个 lead RM25，但 10 个只有 1 个肯约见面 / 还没开始跑广告，不知道从哪里开始"></textarea></label>
+</section>
 
-<div class="note">
+<section class="card">
+<h2><span>第 2 步</span>　选你方便的时间（马来西亚时间）</h2>
+<div class="field">日期<div class="chips" id="days"></div></div>
+<div class="field">时间（Zoom 45 分钟）<div class="chips" id="slots"></div></div>
+<p class="chosen">你选的时间：<span id="chosen">还没选</span></p>
+</section>
+
+<p class="err" id="err" role="alert"></p>
+<button type="submit" class="btn wa-btn" style="max-width:none;margin-top:20px">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9s.7-2.1 1-2.4c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.7-.1 1.2z"/></svg>
+确认预约 · 发送到 WhatsApp</button>
+<p style="margin:10px 0 0;text-align:center;font-size:14px;color:var(--mute)">按下后会打开 WhatsApp，<b>记得按「发送」</b>，名额才算锁定</p>
+</form>
+
+<div class="note" style="margin-top:20px">
 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E11D1D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 28px"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
-<p><b>零风险：</b>就算 Zoom 之后不合作，90 天计划和同行拆解一样是你的。预约后你会收到邮件邀请，可以直接加进你的 Calendar，我们也会 WhatsApp 你确认。</p>
+<p><b>零风险：</b>就算 Zoom 之后不合作，90 天计划和同行拆解一样是你的。我们的同事会打电话 / WhatsApp 你确认时间和 Zoom 链接。</p>
 </div>
-<p style="text-align:center;margin:0 0 48px"><a href="/" style="color:#555555">← 返回看完整内容</a></p>
+<p style="text-align:center;margin:0"><a href="/" style="color:#555555">← 返回看完整内容</a></p>
 </main>
 
 <script>
 fbq('track', 'ViewContent', { content_name: 'Booking page' });
+(function () {
+  var C = window.ADT || {};
+  var WK = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  var state = { date: null, dateLabel: '', time: null };
+  var $ = function (id) { return document.getElementById(id); };
 
-function getCookie(n) {
-  var m = document.cookie.match('(?:^|; )' + n + '=([^;]*)');
-  return m ? decodeURIComponent(m[1]) : '';
-}
-
-// Cal.com inline embed
-(function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
-
-Cal("init", "adt", { origin: "https://app.cal.com" });
-
-// Pass Meta click ids into the booking so the server (CAPI) can match the ad click.
-var qs = new URLSearchParams(location.search);
-var fbclid = qs.get('fbclid');
-var fbc = getCookie('_fbc') || (fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '');
-var calConfig = { layout: "month_view", theme: "light" };
-if (getCookie('_fbp')) calConfig["metadata[fbp]"] = getCookie('_fbp');
-if (fbc) calConfig["metadata[fbc]"] = fbc;
-calConfig["metadata[source_url]"] = location.origin + '/book';
-calConfig["metadata[ua]"] = navigator.userAgent.slice(0, 400);
-["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) {
-  if (qs.get(k)) calConfig[k] = qs.get(k);
-});
-
-Cal.ns.adt("inline", {
-  elementOrSelector: "#cal-inline",
-  calLink: (window.ADT && ADT.calLink) || "skyied/skyied-client-appt-booking",
-  config: calConfig
-});
-Cal.ns.adt("ui", { theme: "light", hideEventTypeDetails: false, layout: "month_view", cssVarsPerTheme: { light: { "cal-brand": "#E11D1D" } } });
-
-// Booking done -> browser Schedule event (same event_id as the server CAPI event) -> thank-you page
-var done = false;
-Cal.ns.adt("on", {
-  action: "bookingSuccessfulV2",
-  callback: function (e) {
-    if (done) return; done = true;
-    var data = (e && e.detail && e.detail.data) || {};
-    // Only fire in the browser when we have the booking uid, so Meta can de-duplicate
-    // against the server event. Without a uid the server (CAPI) event still counts.
-    if (data.uid) fbq('track', 'Schedule', { content_name: 'Free Zoom' }, { eventID: 'cal_' + data.uid });
-    var p = new URLSearchParams();
-    if (data.startTime) p.set('start', data.startTime);
-    if (data.endTime) p.set('end', data.endTime);
-    if (data.videoCallUrl) p.set('video', data.videoCallUrl);
-    setTimeout(function () { location.href = '/thank-you?' + p.toString(); }, 600);
+  // Malaysia "today" regardless of the visitor's device timezone
+  var my = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
+  var closed = C.closedWeekdays || [];
+  var days = [], i = 1;
+  while (days.length < (C.daysAhead || 8) && i < 30) {
+    var d = new Date(my.getFullYear(), my.getMonth(), my.getDate() + i);
+    if (closed.indexOf(d.getDay()) === -1) days.push(d);
+    i++;
   }
-});
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  days.forEach(function (d, idx) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+    var label = (d.getMonth() + 1) + '/' + d.getDate();
+    b.innerHTML = '<small>' + (idx === 0 && d.getDate() === new Date(my.getTime() + 864e5).getDate() ? '明天' : WK[d.getDay()]) + '</small>' + label;
+    b.addEventListener('click', function () {
+      $('days').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      state.date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+      state.dateLabel = WK[d.getDay()] + ' ' + label;
+      render();
+    });
+    $('days').appendChild(b);
+  });
+  (C.timeSlots || []).forEach(function (t) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.textContent = t;
+    b.addEventListener('click', function () {
+      $('slots').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true'); state.time = t; render();
+    });
+    $('slots').appendChild(b);
+  });
+  function render() {
+    $('chosen').textContent = state.date || state.time
+      ? (state.dateLabel || '请选日期') + ' · ' + (state.time || '请选时间') : '还没选';
+    $('err').style.display = 'none';
+  }
+  function to24(t) {
+    var m = t.match(/(\d+):(\d+)\s*(AM|PM)/i); if (!m) return '10:00';
+    var h = +m[1] % 12 + (/pm/i.test(m[3]) ? 12 : 0); return pad(h) + ':' + m[2];
+  }
+  function getCookie(n) { var m = document.cookie.match('(?:^|; )' + n + '=([^;]*)'); return m ? decodeURIComponent(m[1]) : ''; }
+
+  ['name', 'phone', 'industry'].forEach(function (id) {
+    $(id).addEventListener('input', function () { $(id).parentNode.classList.remove('bad'); });
+    $(id).addEventListener('change', function () { $(id).parentNode.classList.remove('bad'); });
+  });
+  $('book').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = $('name').value.trim(), phone = $('phone').value.trim(), ind = $('industry').value;
+    var ch = $('challenge').value.trim();
+    ['f-name', 'f-phone', 'f-ind'].forEach(function (id) { $(id).classList.remove('bad'); });
+    var miss = [];
+    if (!name) { miss.push('名字'); $('f-name').classList.add('bad'); }
+    if (phone.replace(/\D/g, '').length < 9) { miss.push('WhatsApp 号码'); $('f-phone').classList.add('bad'); }
+    if (!ind) { miss.push('行业'); $('f-ind').classList.add('bad'); }
+    if (!state.date) miss.push('日期');
+    if (!state.time) miss.push('时间');
+    if (miss.length) { $('err').textContent = '请填写 / 选择：' + miss.join('、'); $('err').style.display = 'block'; return; }
+
+    var startISO = state.date + 'T' + to24(state.time) + ':00+08:00';
+    var msg = 'Hi Adtomatic，我要预约免费 45 分钟 Zoom 咨询 🙋\n\n'
+      + '👤 名字：' + name + '\n'
+      + '📱 WhatsApp：' + phone + '\n'
+      + '🏢 行业：' + ind + '\n'
+      + '📅 时间：' + state.dateLabel + ' ' + state.time + '（马来西亚时间）\n'
+      + '📝 CPL / 挑战：' + (ch || '-');
+    var wa = 'https://wa.me/' + (C.bookingWhatsApp || '60182626442') + '?text=' + encodeURIComponent(msg);
+
+    // Tracking: browser Schedule + server (CAPI) Schedule with the same event id
+    var eid = 'bk_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    fbq('track', 'Schedule', { content_name: 'Free Zoom' }, { eventID: eid });
+    var qs = new URLSearchParams(location.search), fbclid = qs.get('fbclid');
+    var payload = JSON.stringify({
+      event_id: eid, name: name, phone: phone, industry: ind, start: startISO,
+      fbp: getCookie('_fbp'), fbc: getCookie('_fbc') || (fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : ''),
+      source_url: location.origin + '/book'
+    });
+    try {
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/lead', new Blob([payload], { type: 'application/json' }));
+      else fetch('/api/lead', { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload, keepalive: true });
+    } catch (err) {}
+
+    // Open WhatsApp (new tab/app) and move this tab to the thank-you page
+    var ty = '/thank-you?start=' + encodeURIComponent(startISO) + '&wa=' + encodeURIComponent(wa);
+    try { sessionStorage.setItem('adt_ty', ty); } catch (err) {}
+    var w = null;
+    try { w = window.open(wa, '_blank'); } catch (err) {}
+    // If a new tab/app opened, show the thank-you page here.
+    // If it was blocked (common in Facebook / Instagram in-app browsers), open WhatsApp in this tab;
+    // when the visitor comes back, the pageshow handler below sends them to the thank-you page.
+    if (w) location.href = ty; else location.href = wa;
+  });
+
+  // Back from WhatsApp -> thank-you page
+  window.addEventListener('pageshow', function () {
+    var ty = null;
+    try { ty = sessionStorage.getItem('adt_ty'); } catch (err) {}
+    if (ty) { try { sessionStorage.removeItem('adt_ty'); } catch (err) {} location.replace(ty); }
+  });
+})();
 </script>
 </body>
 </html>

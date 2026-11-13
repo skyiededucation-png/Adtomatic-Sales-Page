@@ -9,7 +9,197 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/site.css">
+<style>:root{--red:#E11D1D;--red-dark:#B91515;--red-soft:#FFF4F4;--ink:#111111;--ink-2:#333333;--mute:#555555;--grey:#F5F5F5;--navy:#0D1B2A}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#FFFFFF;color:var(--ink);font-family:'Noto Sans SC','Poppins',system-ui,-apple-system,sans-serif}
+a{color:var(--ink)}a:hover{color:var(--red)}
+img{max-width:100%}
+.wrap{max-width:1040px;margin:0 auto;padding-left:20px;padding-right:20px}
+.sec{padding-top:80px;padding-bottom:80px}
+.eyebrow{font-size:15px;font-weight:900;letter-spacing:2px;color:var(--red);margin:0 0 12px}
+.h2{margin:0;font-size:clamp(28px,4vw,44px);line-height:1.25;font-weight:900}
+.red{color:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:64px;width:100%;max-width:520px;padding:18px 28px;background:var(--red);color:#FFFFFF !important;font-size:22px;font-weight:900;text-decoration:none;border-radius:10px;border:none;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--red-dark)}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ph{background:#EDEDED;border:2px dashed #BBBBBB;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--mute);font-size:15px;font-weight:700;text-align:center;padding:12px}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:20;background:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.topbar .wrap{padding-top:8px;padding-bottom:8px;display:flex;align-items:center;gap:14px}
+.topbar img{height:48px;width:auto;display:block;flex:0 0 auto}
+.topbar p{margin:0;flex:1 1 auto;min-width:0;font-size:clamp(14px,2vw,18px);line-height:1.4;font-weight:900;color:#FFFFFF}
+.topbar p span{color:#FF4D4D}
+
+/* hero */
+.hero{padding-top:48px;padding-bottom:64px;display:flex;flex-direction:column;align-items:center;gap:28px;text-align:center}
+.kicker{margin:0;font-size:16px;font-weight:700;color:var(--mute)}
+.price-row{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:12px}
+.strike{font-size:20px;font-weight:500;color:var(--mute);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:3px}
+.tag{font-size:20px;font-weight:900;color:#FFFFFF;background:var(--red);padding:6px 16px;border-radius:6px}
+.hero h1{margin:0;font-size:clamp(30px,5.4vw,60px);line-height:1.22;font-weight:900;letter-spacing:-.5px;max-width:960px}
+.vsl{width:100%;max-width:820px;aspect-ratio:16/9}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;width:100%;max-width:820px;text-align:left}
+.checks li{display:flex;align-items:flex-start;gap:14px;background:var(--grey);border-radius:10px;padding:18px 20px;font-size:20px;line-height:1.55;font-weight:500}
+.checks svg{flex:0 0 28px;margin-top:2px}
+.checks b{color:var(--red);font-weight:900}
+.scarce{margin:0;font-size:16px;font-weight:700;color:var(--red)}
+
+/* proof */
+.proof{background:var(--ink);color:#FFFFFF}
+.proof .g4{padding-top:32px;padding-bottom:32px;text-align:center}
+.stat{font-family:Poppins,sans-serif;font-size:38px;font-weight:800}
+.stat-l{font-size:15px;color:#DDDDDD}
+
+/* pain */
+.pain{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--ink);border-radius:10px;padding:18px;font-size:18px;line-height:1.6}
+.pain b{color:var(--red);font-size:22px;line-height:1.3}
+.punch{margin:32px 0 0;font-size:22px;line-height:1.6;font-weight:900;text-align:center}
+.punch span{background:var(--red);color:#FFFFFF;padding:2px 8px}
+
+/* stack */
+.stack{margin:36px auto 0;max-width:820px;border:3px solid var(--ink);border-radius:14px;overflow:hidden}
+.row{display:flex;gap:16px;padding:22px;border-bottom:1px solid #DDDDDD;align-items:flex-start;flex-wrap:wrap}
+.row.bonus{background:var(--red-soft)}
+.row>div:first-child{flex:1 1 420px;min-width:0}
+.row b{font-size:20px}
+.row p{margin:6px 0 0;font-size:16px;line-height:1.6;color:var(--ink-2)}
+.val{font-family:Poppins,sans-serif;font-size:20px;font-weight:800}
+.total{background:var(--ink);color:#FFFFFF;padding:26px 22px;text-align:center;display:flex;flex-direction:column;gap:6px}
+.total .t1{font-size:20px;color:#DDDDDD}
+.total .t1 s{text-decoration-color:#FF4D4D;text-decoration-thickness:3px}
+.total .t2{font-size:36px;font-weight:900}
+.total .t3{font-size:15px;color:#DDDDDD}
+
+/* roadmap */
+.grey{background:var(--grey)}
+.step{background:#FFFFFF;border-radius:10px;padding:24px;border-top:6px solid var(--ink)}
+.step.dark{background:var(--ink);color:#FFFFFF;border-top-color:var(--red)}
+.step small{font-size:15px;font-weight:700;color:var(--red)}
+.step.dark small{color:#FF4D4D}
+.step h3{margin:6px 0 10px;font-size:22px;font-weight:900}
+.step p{margin:0;font-size:16px;line-height:1.7;color:var(--ink-2)}
+.step.dark p{color:#DDDDDD}
+
+/* cases */
+.tabs{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.tabs button{min-height:48px;padding:10px 18px;border-radius:999px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;border:2px solid var(--ink);background:#FFFFFF;color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:#FFFFFF}
+.case{margin-top:20px;border:3px solid var(--ink);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:20px}
+.case .box{background:var(--grey);border-radius:10px;padding:16px}
+.case .box.dark{background:var(--ink);color:#FFFFFF}
+.case .box div:first-child{font-size:14px;color:var(--mute)}
+.case .box.dark div:first-child{color:#DDDDDD}
+.case .box div:last-child{font-family:Poppins,sans-serif;font-size:26px;font-weight:800}
+.case .box.dark div:last-child{color:#FF4D4D}
+.case .box div:last-child{font-size:clamp(17px,5vw,26px);white-space:nowrap}
+@media (max-width:600px){.case{padding:18px}.case .box{padding:14px 12px}}
+.case-shots{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.case-shots figure{margin:0;display:flex;flex-direction:column;gap:6px}
+.case-shots img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid #DDDDDD}
+.case-note{margin:-8px 0 0;font-size:13px;color:var(--mute)}
+@media (max-width:600px){.case-shots{grid-template-columns:1fr}.case-shots img{max-width:420px;margin:0 auto}}
+.case-shots figcaption{font-size:13px;color:var(--mute);font-weight:700;text-align:center}
+.wa{margin-top:20px;background:var(--red-soft);border:2px solid var(--red);border-radius:12px;padding:22px}
+.wa b{font-size:20px}
+.wa p{margin:6px 0 0;font-size:16px;line-height:1.7;color:var(--ink-2)}
+.wa a{font-weight:900}
+
+/* fit */
+.fit{border:3px solid var(--ink);border-radius:12px;padding:24px}
+.fit.no{border-color:var(--red);background:var(--red-soft)}
+.fit b{font-size:20px}
+.fit.no b{color:var(--red)}
+.fit ul{margin:14px 0 0;padding-left:20px;font-size:17px;line-height:1.9}
+
+/* zoom flow */
+.dark-sec{background:var(--ink);color:#FFFFFF}
+.dark-sec .h2{color:#FFFFFF}
+.dark-sec .eyebrow{color:#FF4D4D}
+.slot{border:1px solid #444444;border-radius:10px;padding:18px}
+.slot b{color:#FF4D4D;font-size:15px}
+.slot p{margin:8px 0 0;font-size:17px;line-height:1.6}
+
+/* risk */
+.risk{max-width:820px;margin:0 auto;border:3px solid var(--ink);border-radius:14px;padding:24px;display:flex;gap:16px;align-items:flex-start}
+.risk b{font-size:22px}
+.risk p{margin:6px 0 0;font-size:18px;line-height:1.7}
+
+/* faq */
+.faq{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+.faq div{background:#FFFFFF;border-radius:10px;padding:20px}
+.faq b{font-size:18px}
+.faq p{margin:8px 0 0;font-size:16px;line-height:1.7;color:var(--ink-2)}
+
+/* final */
+.final{background:var(--navy);color:#FFFFFF}
+.final .wrap{display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center}
+.final .h2{color:#FFFFFF}
+.final .h2 span{color:#FF4D4D}
+.final p{margin:0;font-size:18px;color:#DDDDDD}
+.final img{height:96px;width:auto;margin-top:24px}
+.final small{font-size:13px;color:#AAAAAA}
+
+/* sticky cta */
+.cta-bar{position:sticky;bottom:0;z-index:20;background:rgba(255,255,255,.97);border-top:1px solid #DDDDDD;box-shadow:0 -4px 16px rgba(0,0,0,.12)}
+.cta-bar .wrap{padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:6px}
+.cta-bar span{font-size:13px;font-weight:700;color:var(--red)}
+@keyframes cta-shake{0%,52%,100%{transform:translate(0,0) rotate(0)}56%{transform:translate(-6px,0) rotate(-2deg)}60%{transform:translate(6px,-3px) rotate(2deg)}64%{transform:translate(-5px,3px) rotate(-1.5deg)}68%{transform:translate(5px,-2px) rotate(1.5deg)}72%{transform:translate(-3px,2px) rotate(-1deg)}76%{transform:translate(2px,-1px) rotate(.5deg)}80%{transform:translate(0,0) rotate(0)}}
+.shake{animation:cta-shake 2.2s ease-in-out infinite}
+.shake:hover{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+
+/* book page */
+.narrow{max-width:760px}
+.book-head{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;padding-top:28px}
+.book-head h1{margin:0;font-size:clamp(26px,5vw,38px);line-height:1.3;font-weight:900}
+.book-head p{margin:0;font-size:16px;color:var(--mute)}
+.cal-box{margin:24px 0 0;border:3px solid var(--ink);border-radius:14px;overflow:hidden;min-height:640px;background:#FFFFFF}
+#cal-inline{width:100%;min-height:640px;overflow:auto}
+.note{margin:20px 0 48px;background:var(--grey);border-radius:12px;padding:18px;display:flex;gap:12px;align-items:flex-start;font-size:16px;line-height:1.6}
+.note p{margin:0}
+
+/* thank you */
+.ty{text-align:center;display:flex;flex-direction:column;gap:18px;align-items:center;padding-top:48px;padding-bottom:64px}
+.ty h1{margin:0;font-size:clamp(28px,5vw,40px);font-weight:900}
+.ty .when{margin:0;font-size:20px;line-height:1.6}
+.next{max-width:560px;width:100%;text-align:left;border:3px solid var(--ink);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.next p{margin:0;font-size:17px;line-height:1.6}
+.next p b{color:var(--red)}
+
+@media (max-width:760px){
+.g2,.g3{grid-template-columns:minmax(0,1fr)}
+.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sec{padding-top:56px;padding-bottom:56px}
+.wrap{padding-left:16px;padding-right:16px}
+.topbar img{height:36px}
+.topbar p{font-size:13px;line-height:1.35}
+.hero{padding-top:28px;padding-bottom:48px;gap:22px}
+.checks li{font-size:17px;padding:14px 16px}
+.stat{font-size:clamp(20px,6vw,30px)}
+.total .t2{font-size:28px}
+.btn{font-size:18px;min-height:56px;padding:14px 18px}
+.row{padding:18px}
+.risk{padding:18px}
+}
+@media (max-width:480px){.m1{grid-template-columns:minmax(0,1fr)}}
+
+/* WhatsApp screenshots */
+.wa-shot{margin:0;display:flex;flex-direction:column;gap:6px}
+.wa-shot img{width:100%;height:auto;display:block;border-radius:10px;border:1px solid #DDDDDD;cursor:zoom-in;background:#FFFFFF}
+.wa-shot figcaption{font-size:13px;color:var(--mute);font-weight:700;text-align:center}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:16px;z-index:1000;cursor:zoom-out}
+.lightbox.open{display:flex}
+.lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+/* VSL video */
+.vsl-box{position:relative;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.vsl-box video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+.vsl-play{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.25);border:none;cursor:pointer;color:#FFFFFF;font-family:inherit;font-size:16px;font-weight:900;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.vsl-play.hide{display:none}
+</style>
 <script src="/js/config.js"></script>
 <script src="/js/pixel.js"></script>
 </head>
@@ -28,9 +218,11 @@
 <p class="kicker">给在跑广告、但PM/Lead很难变成Sales的老板</p>
 <div class="price-row"><span class="strike">原价 RM399 / Consultation Fee</span><span class="tag">限时免费</span></div>
 <h1>同行有效策略拆解 <span class="red">+</span> 90 天AI Marketing Planning获客计划 <span class="red">+</span> 规划Ai自动获客流程</h1>
-<div class="ph vsl">
-<svg width="64" height="64" viewBox="0 0 24 24" fill="#E11D1D" aria-hidden="true"><circle cx="12" cy="12" r="11"/><path d="M10 8l6 4-6 4z" fill="#FFFFFF"/></svg>
-<span>[VSL 视频 2–3 分钟：为什么你的广告有询问却没预约]</span>
+<div class="vsl vsl-box">
+<video id="vsl" playsinline preload="metadata" poster="/assets/vsl-poster.jpg">
+<source src="/assets/vsl.mp4" type="video/mp4">
+</video>
+<button type="button" class="vsl-play" id="vsl-play" aria-label="播放视频"><svg width="84" height="84" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#E11D1D"/><path d="M10 8l6 4-6 4z" fill="#FFFFFF"/></svg><span>点击播放 · 90 秒</span></button>
 </div>
 <ul class="checks">
 <li><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E11D1D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span>看清同行<b>正在赚钱</b>的广告打法</span></li>
@@ -103,14 +295,19 @@
 <h2 class="h2">选你的行业，<span class="red">看我们跑出来的结果</span></h2>
 <div class="tabs" role="tablist" aria-label="行业" id="tabs"></div>
 <div class="case">
-<b style="font-size:22px"><span id="case-name">装修 Renovation</span> · [客户名 / 地区]</b>
+<b style="font-size:22px"><span id="case-name">装修 Renovation</span> · <span id="case-client">V Smart Kitchen · Penang | Butterworth</span></b>
 <div class="g4">
-<div class="box"><div>广告花费</div><div>RM[X]</div></div>
-<div class="box"><div>询问数</div><div>[X]</div></div>
-<div class="box"><div>预约数</div><div>[X]</div></div>
-<div class="box dark"><div>Cost per Appointment</div><div>RM[X]</div></div>
+<div class="box"><div>广告花费</div><div id="case-spend">RM1,286.11</div></div>
+<div class="box"><div>询问数</div><div id="case-leads">137</div></div>
+<div class="box"><div>预约数</div><div id="case-appt">30</div></div>
+<div class="box dark"><div>Cost per Appointment</div><div id="case-cpa">RM42.87</div></div>
 </div>
-<div class="ph" style="min-height:180px"><span>[<span id="case-shot">装修 Renovation</span> 广告创意截图 + Ads Manager 结果截图]</span></div>
+<p class="case-note" id="case-note">数据期：13 Oct – 4 Nov 2026 · 来源：Meta Ads Manager</p>
+<div id="case-media" class="case-shots">
+<figure><img id="case-img-ad" src="/assets/img/img-992ed503d6.jpg" alt="广告创意截图" loading="lazy"><figcaption>广告创意</figcaption></figure>
+<figure><img id="case-img-results" src="/assets/img/img-6086597463.jpg" alt="Ads Manager 结果截图" loading="lazy"><figcaption>Ads Manager 结果</figcaption></figure>
+</div>
+<div class="ph" id="case-ph" style="min-height:180px;display:none"><span>[<span id="case-shot">装修 Renovation</span> 广告创意截图 + Ads Manager 结果截图]</span></div>
 </div>
 <div class="wa">
 <b>没看到你的行业？</b>
@@ -130,10 +327,10 @@
 </div>
 <h3 style="margin:40px 0 16px;font-size:22px;font-weight:900">客户 WhatsApp 原话</h3>
 <div class="g4">
-<div class="ph" style="aspect-ratio:9/16">[WhatsApp 截图 1]</div>
-<div class="ph" style="aspect-ratio:9/16">[WhatsApp 截图 2]</div>
-<div class="ph" style="aspect-ratio:9/16">[WhatsApp 截图 3]</div>
-<div class="ph" style="aspect-ratio:9/16">[WhatsApp 截图 4]</div>
+<figure class="wa-shot"><img src="/assets/img/img-31f3435588.jpg" alt="Flooring 客户 WhatsApp 原话：从 30 多块的 lead cost 缩到 8 块" loading="lazy" data-zoom><figcaption>Flooring · Mr Loke</figcaption></figure>
+<figure class="wa-shot"><img src="/assets/img/img-6c86c3dca4.jpg" alt="F&amp;B 客户 WhatsApp 原话：之前找了 20 个 KOL 都没有现在的效果那么夸张" loading="lazy" data-zoom><figcaption>F&amp;B · Mr Poh</figcaption></figure>
+<figure class="wa-shot"><img src="/assets/img/img-ae2542e7ab.jpg" alt="Property 客户 WhatsApp 原话：23 个人来 showroom，交资料 9 个，成交 5 个" loading="lazy" data-zoom><figcaption>Property · Alvin</figcaption></figure>
+<figure class="wa-shot"><img src="/assets/img/img-fb479dbc0b.jpg" alt="Loan 客户 WhatsApp 原话：有 22 个过了，SME loan 6 个和 personal 16 单" loading="lazy" data-zoom><figcaption>Loan · Andy</figcaption></figure>
 </div>
 </div>
 </section>
@@ -205,8 +402,48 @@
 
 <script>
 (function () {
+  var v = document.getElementById('vsl'), pb = document.getElementById('vsl-play');
+  if (v && pb) {
+    pb.addEventListener('click', function () { pb.classList.add('hide'); v.controls = true; v.play(); });
+    v.addEventListener('play', function () { pb.classList.add('hide'); v.controls = true; });
+    var fired = {};
+    v.addEventListener('timeupdate', function () {
+      if (!v.duration) return;
+      var pct = v.currentTime / v.duration;
+      [[0, 'VSL Play'], [0.5, 'VSL 50%'], [0.95, 'VSL Complete']].forEach(function (m) {
+        if (pct >= m[0] && !fired[m[1]] && v.currentTime > 0.5) { fired[m[1]] = 1; fbq('trackCustom', 'VSLView', { stage: m[1] }); }
+      });
+    });
+  }
+})();
+</script>
+<script>
+(function () {
   // Industry tabs
-  var names = ['装修 Renovation', '地产 Property', '贷款 Loan', '运动培训', '餐饮 F&B', '厨柜 / 家居'];
+  var names = ['装修 Renovation', '地产 Property', '贷款 Loan', '运动培训', '餐饮 F&B'];
+  // Real case data per industry. Empty entry = placeholder until data is added.
+  var CASES = {
+    '装修 Renovation': { client: 'V Smart Kitchen · Penang | Butterworth', note: '数据期：13 Oct – 4 Nov 2026 · 来源：Meta Ads Manager', spend: 'RM1,286.11', leads: '137', appt: '30', cpa: 'RM42.87', media: true, ad: '/assets/img/img-992ed503d6.jpg', results: '/assets/img/img-6086597463.jpg' },
+    '地产 Property': { client: 'Edison · Johor Bahru', note: '来源：Meta Ads Manager', spend: 'RM186.47', leads: '40', appt: '6', cpa: 'RM31.08', media: true, ad: '/assets/img/img-c172514b81.jpg', results: '/assets/img/img-c187c63545.jpg' },
+    '贷款 Loan': { client: 'Jimmy · KL', note: '来源：Meta Ads Manager', spend: 'RM499.75', leads: '81', appt: '40', cpa: 'RM12.49', media: true, ad: '/assets/img/img-36e16ab5f1.jpg', results: '/assets/img/img-51b5aeba56.jpg' },
+    '运动培训': { client: 'Tze Liang · Penang', note: '来源：Meta Ads Manager', spend: 'RM1,644.09', leads: '276', appt: '145', cpa: 'RM11.34', media: true, ad: '/assets/img/img-74b98f51ae.jpg', results: '/assets/img/img-8e8ddf29f0.jpg' },
+    '餐饮 F&B': { client: 'Hyman · Muar, Johor', note: '来源：Meta Ads Manager', spend: 'RM269.66', leads: '31', appt: '18', cpa: 'RM14.98', media: true, ad: '/assets/img/img-03e580c797.jpg', results: '/assets/img/img-1065cf463e.jpg' }
+  };
+  function showCase(n) {
+    var c = CASES[n], $ = function (id) { return document.getElementById(id); };
+    $('case-name').textContent = n;
+    $('case-shot').textContent = n;
+    $('case-client').textContent = c ? c.client : '[客户名 / 地区]';
+    $('case-spend').textContent = c ? c.spend : 'RM[X]';
+    $('case-leads').textContent = c ? c.leads : '[X]';
+    $('case-appt').textContent = c ? c.appt : '[X]';
+    $('case-cpa').textContent = c ? c.cpa : 'RM[X]';
+    $('case-note').textContent = c && c.note ? c.note : '';
+    $('case-note').style.display = c && c.note ? '' : 'none';
+    if (c && c.media) { $('case-img-ad').src = c.ad; $('case-img-results').src = c.results; }
+    $('case-media').style.display = c && c.media ? '' : 'none';
+    $('case-ph').style.display = c && c.media ? 'none' : '';
+  }
   var tabs = document.getElementById('tabs');
   names.forEach(function (n, i) {
     var b = document.createElement('button');
@@ -215,10 +452,16 @@
     b.addEventListener('click', function () {
       tabs.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-selected', 'false'); });
       b.setAttribute('aria-selected', 'true');
-      document.getElementById('case-name').textContent = n;
-      document.getElementById('case-shot').textContent = n;
+      showCase(n);
     });
     tabs.appendChild(b);
+  });
+  // Tap screenshot to view full size
+  var lb = document.createElement('div'); lb.className = 'lightbox'; lb.innerHTML = '<img alt="">';
+  lb.addEventListener('click', function () { lb.classList.remove('open'); });
+  document.body.appendChild(lb);
+  document.querySelectorAll('img[data-zoom]').forEach(function (im) {
+    im.addEventListener('click', function () { lb.firstChild.src = im.src; lb.firstChild.alt = im.alt; lb.classList.add('open'); });
   });
   // WhatsApp link from config
   if (window.ADT && ADT.whatsapp) document.getElementById('wa-link').href = ADT.whatsapp;
